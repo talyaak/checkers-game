@@ -42,11 +42,11 @@ class Game {
         if (this.enemyCheck(selectedPiece)) {
             if (Math.abs(row - selectedPiece.row) === 1
                 && Math.abs(col - selectedPiece.col) === 1) {
-                    console.log("test\ntried to flee from enemy!")
-                    return false;
-                }
+                console.log("test\ntried to flee from enemy!")
+                return false;
+            }
         }
-        // next blocks - no enemy is possibleMoves
+        // next blocks - no enemies in possibleMoves
         const possibleMoves = this.getPossibleMoves(selectedPiece);
         for (const possibleMove of possibleMoves) { // possibleMove example: [1,1], [-1,1]
             // 'if' block that checks if there is a legal move (within possibleMoves array)
@@ -60,6 +60,7 @@ class Game {
         }
         return false;
     }
+    // Check enemies inside selectedPiece's possibleMoves
     enemyCheck(selectedPiece) {
         let possibleMoves = selectedPiece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
         // if block below - true means there is a PossibleMove where an enemy can be eaten
@@ -95,4 +96,36 @@ class Game {
         if (this.currentPlayer !== piece.player) { return [] } // No moves, wait for your turn
         return piece.getPossibleMoves(this.boardData);
     }
+
+    checkForWinner() {
+        if (this.blackTeamScore === 12 || this.whiteTeamScore === 12) {
+            onSquareClick = function () { } // disabling further clicks
+            if (this.blackTeamScore === 12) { winner = "Black Team"; }
+            else { winner = "White Team"; }
+            winnerAnnounce = winner + " WON!";
+        }
+    }
+    /* A function that checks if current player has any "showdowns" (force-eat-enemy)
+    In this case we allow movement only to pieces that are in showdown, if not -> continuing as usual */
+    checkForShowdown() {
+        let showdownPieces = [];
+        for (let piece of this.boardData.pieces) {
+            if (piece.player === this.currentPlayer) {
+                let possibleMoves = piece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
+                // if block below - true means there is a PossibleMove where an enemy can be eaten
+                for (let possibleMove of possibleMoves) {
+                    if (Math.abs(possibleMove[0] - piece.row) > 1
+                        && Math.abs(possibleMove[1] - piece.col) > 1) {
+                        showdownPieces.push(piece);
+                    }
+                }
+                authorizedPieces = showdownPieces;
+            }
+        }
+        if (showdownPieces.length === 0) {
+            authorizedPieces = this.boardData.pieces;
+        }
+
+    }
+
 }

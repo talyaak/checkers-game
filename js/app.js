@@ -6,15 +6,18 @@ const CHECKERS_BOARD_ID = 'checkers-board';
 
 // Global variables - non-constants
 let board, boardContainer, game, selectedPiece, winnerAnnounce = "", winner;
+let authorizedPieces = [];
 
+// Runs after HTML Load
 function _init() {
     game = new Game();
     createCheckersBoard();
 }
 
 function createCheckersBoard() {
-    checkForWinner();
-
+    game.checkForWinner();
+    game.checkForShowdown();
+    // Creating/recreating the board (createCheckersBoard runs anew with every 'click')
     board = document.getElementById(CHECKERS_BOARD_ID);
     if (board !== null) { board.remove(); }
 
@@ -58,14 +61,20 @@ function createCheckersBoard() {
 }
 
 function onSquareClick(row, col) {
+    let authCheck;
     const myTurn = game.boardData.isPlayer(row, col, game.currentPlayer);
+    if (myTurn) {
+        const tempPiece = game.boardData.getPiece(row, col);
+        authCheck = authorizedPieces.includes(tempPiece);
+    }
     const emptyCell = game.boardData.isEmpty(row, col);
+
     // first case click-scenario (first click/non-move)
     // if statement to prevent onSquareClick for unauthorized player
-    if (selectedPiece === undefined && (myTurn || emptyCell)) {
+    if (selectedPiece === undefined && (authCheck || emptyCell)) {
         console.log("test 1");
         game.showMoves(row, col);
-    } else if (selectedPiece !== undefined && (myTurn || emptyCell)) {
+    } else if (selectedPiece !== undefined && (authCheck || emptyCell)) {
         if (game.tryMove(selectedPiece, row, col)) {
             console.log("test 2");
             selectedPiece = undefined; // true - we can move the piece to [row,col], and we did
@@ -85,14 +94,6 @@ function addImage(cell, player) {
     cell.appendChild(image);
 }
 
-function checkForWinner() {
-    if (game.blackTeamScore === 12 || game.whiteTeamScore === 12) {
-        onSquareClick = function () { } // disabling further clicks
-        if (game.blackTeamScore === 12) { winner = "Black Team"; }
-        else { winner = "White Team"; }
-        winnerAnnounce = winner + " WON!";
-    }
-}
 
 
 
