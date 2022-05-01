@@ -32,15 +32,21 @@ class Piece {
                 const anotherFriendly = boardData.isPlayer(row + relativeMove[0], col + relativeMove[1], this.player);
                 if (!(anotherEnemy || anotherFriendly)) { // 'if' block that checks if we can eat the enemy
                     enemyMoves.push([row + relativeMove[0], col + relativeMove[1]]); // Going above encountered enemy
-                }
-                else { continue; }
+                } else { continue; }
             } else if (boardData.isPlayer(row, col, this.player)) { // Same-piece scenario
                 continue;
             }
         }
-        if (enemyMoves.length !== 0) {
+        
+        /* If there are any enemy moves - we remove possible moves that
+        don't help eating enemies. EXCEPT: When enemy has a wall behind him,
+        e.g. when in column index 1 or 6. */
+        if ((this.col === 1 || this.col === 6) && enemyMoves.length !== 0) {
+            absoluteMoves.concat(enemyMoves);
+        } else if (enemyMoves.length !== 0) { // Dismissing moves that don't consume enemies.
             absoluteMoves = enemyMoves;
-        }
+        } 
+        // Filtering out moves that are out-of-bounds 
         for (let absoluteMove of absoluteMoves) {
             const absoluteRow = absoluteMove[0];
             const absoluteCol = absoluteMove[1];

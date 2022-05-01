@@ -22,11 +22,6 @@ class Game {
             let possibleMoves = piece.getPossibleMoves(this.boardData);
             for (let possibleMove of possibleMoves) {
                 const cell = board.rows[possibleMove[0]].cells[possibleMove[1]];
-                // // Giving a 'eatable' enemy a color - irrelevant
-                // if (this.boardData.isPlayer((possibleMove[0]-1), (possibleMove[1]-1), piece.getOpponent())) {
-                //     const enemyCell = board.rows[possibleMove[0]-1].cells[possibleMove[1]-1];
-                //     enemyCell.classList.add('enemy');
-                // }
                 // Giving cells in our path a color
                 cell.classList.add('possible-move');
             }
@@ -55,16 +50,18 @@ class Game {
                 selectedPiece.row = row;
                 selectedPiece.col = col;
                 this.currentPlayer = selectedPiece.getOpponent();
-                return true
+                return true; // When move has been made, returns true
             }
         }
-        return false;
+        return false; // No move made, returns false
     }
     // Check enemies inside selectedPiece's possibleMoves
     enemyCheck(selectedPiece) {
         let possibleMoves = selectedPiece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
         // if block below - true means there is a PossibleMove where an enemy can be eaten
         for (let possibleMove of possibleMoves) {
+            /* if block: check if diagonal space between the piece and the selected
+            move is bigger than 1 -> meaning that there's an enemy between them */
             if (Math.abs(possibleMove[0] - selectedPiece.row) > 1
                 && Math.abs(possibleMove[1] - selectedPiece.col) > 1) {
                 return true;
@@ -72,6 +69,7 @@ class Game {
         }
         return false;
     }
+
     // Checking after each move, if an enemy has been eaten
     eatPotentialEnemy(selectedPiece, row, col) {
         // if block - checks if player has moved more than one cube away (== ate an enemy)
@@ -90,19 +88,29 @@ class Game {
         }
     }
 
-
-
     getPossibleMoves(piece) {
         if (this.currentPlayer !== piece.player) { return [] } // No moves, wait for your turn
         return piece.getPossibleMoves(this.boardData);
     }
 
+    // Check's if the game's rules for announcing a winner have been met
     checkForWinner() {
+        // Win by score (consumed all enemies)
         if (this.blackTeamScore === 12 || this.whiteTeamScore === 12) {
             onSquareClick = function () { } // disabling further clicks
             if (this.blackTeamScore === 12) { winner = "Black Team"; }
             else { winner = "White Team"; }
             winnerAnnounce = winner + " WON!";
+        
+        // Win by disabling enemy's movement (Black wins)
+        } else if (this.checkMovementDisability(WHITE_PLAYER)) {
+            onSquareClick = function () { }
+            winnerAnnounce = "Black Team WON!";
+
+        // Win by disabling enemy's movement (White wins)
+        } else if (this.checkMovementDisability(BLACK_PLAYER)) {
+            onSquareClick = function () { }
+            winnerAnnounce = "White Team WON!";
         }
     }
     /* A function that checks if current player has any "showdowns" (force-eat-enemy)
@@ -125,7 +133,20 @@ class Game {
         if (showdownPieces.length === 0) {
             authorizedPieces = this.boardData.pieces;
         }
-
+    }
+    /* Checks for 'player' if any of his pieces has possibleMoves
+    True - player is disabled (enemy wins)
+    False - player is OK, game continues */
+    checkMovementDisability(player) {
+        let playerDisabled = true;
+        for (let piece of this.boardData.pieces) {
+            if (piece.player === player) {
+                if (piece.getPossibleMoves(this.boardData).length > 0) {
+                    playerDisabled = false;
+                }
+            }
+        }
+        return playerDisabled;
     }
 
 }

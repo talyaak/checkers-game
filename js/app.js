@@ -6,7 +6,7 @@ const CHECKERS_BOARD_ID = 'checkers-board';
 
 // Global variables - non-constants
 let board, boardContainer, game, selectedPiece, winnerAnnounce = "", winner;
-let authorizedPieces = [];
+let authorizedPieces = []; // <- An array that holds pieces which are allowed to move
 
 // Runs after HTML Load
 function _init() {
@@ -15,6 +15,9 @@ function _init() {
 }
 
 function createCheckersBoard() {
+    /* Two functions in Game() that run in the background, after every piece movement
+    checkForWinner is self-explanatory, checkForShowdown helps us decide which pieces
+    are allowed to move at every turn*/
     game.checkForWinner();
     game.checkForShowdown();
     // Creating/recreating the board (createCheckersBoard runs anew with every 'click')
@@ -29,7 +32,7 @@ function createCheckersBoard() {
     // boardContainer - father element of the game-board in the HTML
     boardContainer = document.getElementById('checkerboard-container');
     boardContainer.innerText = "Currently Playing: " + game.currentPlayer + " team\nScore:\nBlack: "
-        + game.blackTeamScore + "\nWhite: " + game.whiteTeamScore + "\n"; // + winnerAnnounce;
+        + game.blackTeamScore + "\nWhite: " + game.whiteTeamScore + "\n";
     boardContainer.appendChild(board);
 
     /* Creating a table - size 8X8 */
@@ -40,15 +43,14 @@ function createCheckersBoard() {
             if ((row + col) % 2 === 0) {
                 square.className = 'light-cell';
 
-            } else {
-                square.className = 'dark-cell';
-            }
+            } else { square.className = 'dark-cell'; }
             square.addEventListener('click', () => onSquareClick(row, col));
         }
     }
+    // Adding images to every square that holds a checkers piece
     for (let piece of game.boardData.pieces) {
-        const cell = board.rows[piece.row].cells[piece.col];
-        addImage(cell, piece.player);
+        const square = board.rows[piece.row].cells[piece.col];
+        addImage(square, piece.player);
     }
 
     // A Popup message that will appear when a winner is declared
@@ -60,10 +62,13 @@ function createCheckersBoard() {
     }
 }
 
+// Runs after each time a table square is clicked
 function onSquareClick(row, col) {
+    /* Creating boolean statements that will help us determine how the
+    function will work depending on the board and pieces */
     let authCheck;
-    const myTurn = game.boardData.isPlayer(row, col, game.currentPlayer);
-    if (myTurn) {
+    // const myTurn = game.boardData.isPlayer(row, col, game.currentPlayer);
+    if (game.boardData.isPlayer(row, col, game.currentPlayer)) {
         const tempPiece = game.boardData.getPiece(row, col);
         authCheck = authorizedPieces.includes(tempPiece);
     }
