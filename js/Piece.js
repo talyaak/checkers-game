@@ -42,7 +42,7 @@ class Piece {
         don't help eating enemies. EXCEPT: When enemy has a wall behind him,
         e.g. when in column index 1 or 6. */
         if ((this.col === 1 || this.col === 6) && enemyMoves.length !== 0) {
-            absoluteMoves.concat(enemyMoves);
+            absoluteMoves = absoluteMoves.concat(enemyMoves);
         } else if (enemyMoves.length !== 0) { // Dismissing moves that don't consume enemies.
             absoluteMoves = enemyMoves;
         } 

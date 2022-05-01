@@ -14,6 +14,7 @@ function _init() {
     createCheckersBoard();
 }
 
+// Creates the Checkers board, runs after _init(), runs after every time BoardData is updated
 function createCheckersBoard() {
     /* Two functions in Game() that run in the background, after every piece movement
     checkForWinner is self-explanatory, checkForShowdown helps us decide which pieces
@@ -64,14 +65,18 @@ function createCheckersBoard() {
 
 // Runs after each time a table square is clicked
 function onSquareClick(row, col) {
+
     /* Creating boolean statements that will help us determine how the
     function will work depending on the board and pieces */
     let authCheck;
-    // const myTurn = game.boardData.isPlayer(row, col, game.currentPlayer);
     if (game.boardData.isPlayer(row, col, game.currentPlayer)) {
         const tempPiece = game.boardData.getPiece(row, col);
+
+        // authCheck - boolean expression (true - tempPiece is authorized to move)
         authCheck = authorizedPieces.includes(tempPiece);
     }
+
+    // emptyCell - boolean expression (true - square[row,col] is empty)
     const emptyCell = game.boardData.isEmpty(row, col);
 
     // first case click-scenario (first click/non-move)
@@ -79,11 +84,14 @@ function onSquareClick(row, col) {
     if (selectedPiece === undefined && (authCheck || emptyCell)) {
         console.log("test 1");
         game.showMoves(row, col);
+
+    // Not a first-click scenario, It's a try-to-move scenario
     } else if (selectedPiece !== undefined && (authCheck || emptyCell)) {
         if (game.tryMove(selectedPiece, row, col)) {
             console.log("test 2");
             selectedPiece = undefined; // true - we can move the piece to [row,col], and we did
-            createCheckersBoard();
+            createCheckersBoard(); // Revamping the Checkers board since a change has been made
+
         } else { // false - we can't move the piece, so we'll just show the selected cell's possibleMoves
             console.log("test 3");
             game.showMoves(row, col);
@@ -92,17 +100,12 @@ function onSquareClick(row, col) {
 }
 
 
-
+// Adds an image according to parameters
 function addImage(cell, player) {
     const image = document.createElement('img');
     image.src = "images/" + player + "/pawn.png"
     cell.appendChild(image);
 }
-
-
-
-
-
 
 
 // After the HTML is loaded, createCheckerboard() is called
