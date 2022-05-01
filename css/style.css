@@ -61,3 +61,19 @@ td {
 .enemy {
     background-color: #b72020d4;
 }
+.winner-msg {
+    background-color: #ffffff;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 1vw;
+    border-radius: 10px;
+    width: max-content;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 2.5vw;
+    display: inline-block;
+}
+  

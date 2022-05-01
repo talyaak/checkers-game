@@ -37,6 +37,16 @@ class Game {
         selectedPiece = piece;
     }
     tryMove(selectedPiece, row, col) {
+        /* 'if' block that, given there is an enemy in possibleMoves
+        makes it so that eating enemy is the only option*/
+        if (this.enemyCheck(selectedPiece)) {
+            if (Math.abs(row - selectedPiece.row) === 1
+                && Math.abs(col - selectedPiece.col) === 1) {
+                    console.log("test\ntried to flee from enemy!")
+                    return false;
+                }
+        }
+        // next blocks - no enemy is possibleMoves
         const possibleMoves = this.getPossibleMoves(selectedPiece);
         for (const possibleMove of possibleMoves) { // possibleMove example: [1,1], [-1,1]
             // 'if' block that checks if there is a legal move (within possibleMoves array)
@@ -46,6 +56,17 @@ class Game {
                 selectedPiece.col = col;
                 this.currentPlayer = selectedPiece.getOpponent();
                 return true
+            }
+        }
+        return false;
+    }
+    enemyCheck(selectedPiece) {
+        let possibleMoves = selectedPiece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
+        // if block below - true means there is a PossibleMove where an enemy can be eaten
+        for (let possibleMove of possibleMoves) {
+            if (Math.abs(possibleMove[0] - selectedPiece.row) > 1
+                && Math.abs(possibleMove[1] - selectedPiece.col) > 1) {
+                return true;
             }
         }
         return false;
