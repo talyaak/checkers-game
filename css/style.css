@@ -1,48 +1,63 @@
-/* body {
+body {
     background-color: #ffffff;
-    /* user-select: none; */
-    /* height: max-content; */ 
-    /* width: auto; */
-    /* display: flex;
+    user-select: none;
+    height: max-content;
+    width: auto;
+    display: flex;
     flex-direction: column;
-    justify-content: flex-start; */
-    /* align-items: center; */
-    /* min-height: 100vh; */
-    /* margin: 5px;
-}  
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    margin: 5px;
+}
+
 h1 {
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 5px;
     margin: 5px;
-    
+
 }
+
 img {
     -webkit-user-drag: none;
-    height: 75px;
-    width: 75px;
+    height: 73px;
+    width: 73px;
 }
+
 table {
     margin: auto;
     border-collapse: collapse;
     position: relative;
 }
+
 table,
 th,
 td {
-  border: 1px solid black;
-  text-align: center;
-} */
+    border: 1px solid black;
+    text-align: center;
+}
+
 .light-cell {
-    background: #cfdbeb;
+    background: #BBA674ff;
 }
 
 .dark-cell {
-    background: #8ba2c0;
+    background: rgb(110, 80, 35);
 }
-  
 
+.light-cell,
+.dark-cell {
+    height: 75px;
+    width: 75px;
+}
+.selected {
+    background-color: rgba(145, 105, 45, 0.481);
+}
+.possible-move {
+    background-color: #2ef42b6c;
+}
 
-
-
-  
+.enemy {
+    background-color: #b72020d4;
+}
