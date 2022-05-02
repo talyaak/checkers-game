@@ -32,13 +32,19 @@ class Game {
         selectedPiece = piece;
     }
     tryMove(selectedPiece, row, col) {
+        let anotherEnemy;
         /* 'if' block that, given there is an enemy in possibleMoves
         makes it so that eating enemy is the only option*/
         if (this.enemyCheck(selectedPiece)) {
+            // true: moved diagonally only 1 while there was an enemy
             if (Math.abs(row - selectedPiece.row) === 1
                 && Math.abs(col - selectedPiece.col) === 1) {
                 console.log("test\ntried to flee from enemy!")
                 return false;
+            }
+            else { // Moved more than 1, and there is another enemy
+                console.log("check");
+                anotherEnemy = true;
             }
         }
         // next blocks - no enemies in possibleMoves
@@ -49,7 +55,13 @@ class Game {
                 this.eatPotentialEnemy(selectedPiece, row, col, possibleMove);
                 selectedPiece.row = row;
                 selectedPiece.col = col;
-                this.currentPlayer = selectedPiece.getOpponent();
+                if (anotherEnemy) {
+                    if (!this.enemyCheck(selectedPiece)) {
+                        this.currentPlayer = selectedPiece.getOpponent();
+                    }
+                    createCheckersBoard();
+                }
+                else { this.currentPlayer = selectedPiece.getOpponent(); }
                 return true; // When move has been made, returns true
             }
         }
@@ -120,9 +132,9 @@ class Game {
         for (let piece of this.boardData.pieces) {
             if (piece.player === this.currentPlayer) {
                 let possibleMoves = piece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
-                
+
                 // if block below - true means there is a PossibleMove where an enemy can be eaten
-                if (possibleMoves.length > 0) { 
+                if (possibleMoves.length > 0) {
                     haveMoves.push(piece);  // Pieces with movement ability, used after 'for' block
                 }
                 for (let possibleMove of possibleMoves) {
