@@ -21,8 +21,13 @@ h1 {
 
 img {
     -webkit-user-drag: none;
-    height: 73px;
-    width: 73px;
+    /* height: 73px;
+    width: 73px; */
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
 }
 
 table {
@@ -37,7 +42,12 @@ td {
     border: 1px solid black;
     text-align: center;
 }
-
+td {
+    position: relative;
+}
+.piece {
+    cursor: pointer;
+}
 .light-cell {
     background: #BBA674ff;
 }
@@ -48,14 +58,15 @@ td {
 
 .light-cell,
 .dark-cell {
-    height: 80px;
-    width: 80px;
+    height: 76px;
+    width: 76px;
 }
 .selected {
     background-color: rgba(145, 105, 45, 0.481);
 }
 .possible-move {
-    background-color: #2ef42b6c;
+    background-color: #04ff00b7;
+    cursor: pointer;
 }
 
 .enemy {
@@ -81,4 +92,9 @@ td {
     font-weight: bold;
     font-size: 25px;
 }
-  
+.glow {
+    /* box-shadow: 0 5px 15px rgb(0, 0, 0); */
+    border-radius: 7px;
+    box-shadow: 0px 0px 0px 2.1px rgba(255, 255, 255, 0.75);
+    animation: alternate-reverse 1s infinite;
+}

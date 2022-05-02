@@ -1,4 +1,4 @@
-/* 'Piece' - stores chess piece info*/
+/* 'Piece' - stores chess piece info, functions include getOpponent, getPossibleMoves, filterMoves*/
 class Piece {
     constructor(row, col, player) {
         this.row = row;
@@ -12,7 +12,7 @@ class Piece {
         else { return WHITE_PLAYER; }
     }
     getPossibleMoves(boardData) {
-        let absoluteMoves = [], filteredMoves = [], relativeMoves, enemyMoves=[];
+        let absoluteMoves = [], filteredMoves = [], relativeMoves, enemyMoves = [], filteredEnemyMoves = [];
         //possible relative moves - standalone
         if (this.player === WHITE_PLAYER) {
             relativeMoves = [[1, -1], [1, 1]];
@@ -37,21 +37,25 @@ class Piece {
                 continue;
             }
         }
-        
-        /* If there are any enemy moves - we remove possible moves that
-        don't help eating enemies. EXCEPT: When enemy has a wall behind him,
-        e.g. when in column index 1 or 6. */
-        if ((this.col === 1 || this.col === 6) && enemyMoves.length !== 0) {
-            absoluteMoves = absoluteMoves.concat(enemyMoves);
-        } else if (enemyMoves.length !== 0) { // Dismissing moves that don't consume enemies.
-            absoluteMoves = enemyMoves;
-        } 
-        // Filtering out moves that are out-of-bounds 
-        for (let absoluteMove of absoluteMoves) {
-            const absoluteRow = absoluteMove[0];
-            const absoluteCol = absoluteMove[1];
-            if (absoluteRow >= 0 && absoluteRow <= 7 && absoluteCol >= 0 && absoluteCol <= 7) {
-                filteredMoves.push(absoluteMove);
+
+        // filtering out out-of-bound moves
+        enemyMoves = this.filterMoves(enemyMoves);
+        absoluteMoves = this.filterMoves(absoluteMoves);
+
+        // If there are any enemy moves - we ignore absolute moves (abiding game rules).
+        if (enemyMoves.length !== 0) { return enemyMoves; }
+
+        return absoluteMoves;
+    }
+
+    // Inner function that helps filtering out out-of-bounds moves
+    filterMoves(moves) {
+        let filteredMoves = [];
+        for (let move of moves) {
+            const row = move[0];
+            const col = move[1];
+            if (row >= 0 && row <= 7 && col >= 0 && col <= 7) {
+                filteredMoves.push(move);
             }
         }
         return filteredMoves;

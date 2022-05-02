@@ -16,20 +16,25 @@ function _init() {
 
 // Creates the Checkers board, runs after _init(), runs after every time BoardData is updated
 function createCheckersBoard() {
+
     /* Two functions in Game() that run in the background, after every piece movement
     checkForWinner is self-explanatory, checkForShowdown helps us decide which pieces
     are allowed to move at every turn*/
     game.checkForWinner();
     game.checkForShowdown();
+
     // Creating/recreating the board (createCheckersBoard runs anew with every 'click')
     board = document.getElementById(CHECKERS_BOARD_ID);
-    if (board !== null) { board.remove(); }
+    if (board !== null) {
+        board.remove();
+    }
 
 
 
     /* Creating the table that will eventually become our game-board */
     board = document.createElement('table');
     board.id = CHECKERS_BOARD_ID;
+
     // boardContainer - father element of the game-board in the HTML
     boardContainer = document.getElementById('checkerboard-container');
     boardContainer.innerText = "Currently Playing: " + game.currentPlayer + " team\nScore:\nBlack: "
@@ -51,7 +56,11 @@ function createCheckersBoard() {
     // Adding images to every square that holds a checkers piece
     for (let piece of game.boardData.pieces) {
         const square = board.rows[piece.row].cells[piece.col];
-        addImage(square, piece.player);
+        if (authorizedPieces.includes(piece) && game.currentPlayer === piece.player) {
+            addImage(square, piece.player, true);
+        }
+        else { addImage(square, piece.player, false); }
+
     }
 
     // A Popup message that will appear when a winner is declared
@@ -60,6 +69,9 @@ function createCheckersBoard() {
         winnerMsg.textContent = winnerAnnounce;
         board.appendChild(winnerMsg);
         winnerMsg.classList.add('winner-msg');
+        for (let element of document.body.getElementsByTagName("img")) {
+            element.classList.remove("piece"); // remove css cursor pointer
+        }
     }
 }
 
@@ -85,7 +97,7 @@ function onSquareClick(row, col) {
         console.log("test 1");
         game.showMoves(row, col);
 
-    // Not a first-click scenario, It's a try-to-move scenario
+        // Not a first-click scenario, It's a try-to-move scenario
     } else if (selectedPiece !== undefined && (authCheck || emptyCell)) {
         if (game.tryMove(selectedPiece, row, col)) {
             console.log("test 2");
@@ -101,11 +113,30 @@ function onSquareClick(row, col) {
 
 
 // Adds an image according to parameters
-function addImage(cell, player) {
+function addImage(cell, player, glow) {
     const image = document.createElement('img');
+    image.classList.add("piece"); // Css class, cursor pointer
     image.src = "images/" + player + "/pawn.png"
+
+    // glow - boolean expression: True - currentPlayer's pieces (they will glow in-game for)
+    if (glow) { image.classList.add('glow'); }
     cell.appendChild(image);
 }
+
+// function authorizedGlow() {
+//     for (piece of authorizedPieces) {
+//         if (piece.player === game.currentPlayer) {
+//             board.rows[piece.row].cells[piece.col].classList.add('glow');
+//         }
+//     }
+// }
+// function removeGlow() {
+//     for (let i = 0; i < BOARD_SIZE; i++) {
+//         for (let j = 0; j < BOARD_SIZE; j++) {
+//             board.rows[i].cells[j].classList.remove('glow');
+//         }
+//     }
+// }
 
 
 // After the HTML is loaded, createCheckerboard() is called

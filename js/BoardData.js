@@ -23,6 +23,11 @@ class BoardData {
             this.pieces.push(new Piece(5, i, BLACK_PLAYER));
             this.pieces.push(new Piece(7, i, BLACK_PLAYER));
         }
+        
+        // Test kit
+        // this.pieces.push(new Piece(1, 0, BLACK_PLAYER));
+        // this.pieces.push(new Piece(0, 1, WHITE_PLAYER));
+        // this.pieces.push(new Piece(0, 3, WHITE_PLAYER));
         // Test kit
         // this.pieces.push(new Piece(5, 0, WHITE_PLAYER));
         

@@ -101,13 +101,13 @@ class Game {
             if (this.blackTeamScore === 12) { winner = "Black Team"; }
             else { winner = "White Team"; }
             winnerAnnounce = winner + " WON!";
-        
-        // Win by disabling enemy's movement (Black wins)
+
+            // Win by disabling enemy's movement (Black wins)
         } else if (this.checkMovementDisability(WHITE_PLAYER)) {
             onSquareClick = function () { }
             winnerAnnounce = "Black Team WON!";
 
-        // Win by disabling enemy's movement (White wins)
+            // Win by disabling enemy's movement (White wins)
         } else if (this.checkMovementDisability(BLACK_PLAYER)) {
             onSquareClick = function () { }
             winnerAnnounce = "White Team WON!";
@@ -116,11 +116,15 @@ class Game {
     /* A function that checks if current player has any "showdowns" (force-eat-enemy)
     In this case we allow movement only to pieces that are in showdown, if not -> continuing as usual */
     checkForShowdown() {
-        let showdownPieces = [];
+        let showdownPieces = [], haveMoves = [];
         for (let piece of this.boardData.pieces) {
             if (piece.player === this.currentPlayer) {
                 let possibleMoves = piece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
+                
                 // if block below - true means there is a PossibleMove where an enemy can be eaten
+                if (possibleMoves.length > 0) { 
+                    haveMoves.push(piece);  // Pieces with movement ability, used after 'for' block
+                }
                 for (let possibleMove of possibleMoves) {
                     if (Math.abs(possibleMove[0] - piece.row) > 1
                         && Math.abs(possibleMove[1] - piece.col) > 1) {
@@ -130,8 +134,9 @@ class Game {
                 authorizedPieces = showdownPieces;
             }
         }
+        // There's no showdown, ergo authorizedMoves = currentPlayer's pieces that can move
         if (showdownPieces.length === 0) {
-            authorizedPieces = this.boardData.pieces;
+            authorizedPieces = haveMoves;
         }
     }
     /* Checks for 'player' if any of his pieces has possibleMoves
