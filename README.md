@@ -4,8 +4,7 @@ A (currently) private repo, consists of Tal Yakoubov's final project for Cyber4S
 
 ## Description
 
-In this repository, you will find Tal's Checkers game project
-Feel free to browse, I very much hope that you will like my code!
+In this repository, you will find Tal's Checkers game project. Feel free to browse, I very much hope that you will like my code!
 
 ## Getting Started
 
@@ -39,7 +38,7 @@ Feel free to browse, I very much hope that you will like my code!
 ### App.js
 * Uses all above classes to create the Checkerboard and execute a game of Checkers inside of the HTML.
 
-## Features:
+## Features
 * Checkers board with 24 pieces
 * 2 Players - White, Black
 * Every player can move play only on their turn
@@ -62,5 +61,5 @@ Feel free to browse, I very much hope that you will like my code!
 Tal Yakoubov
 [@talyaak](https://github.com/talyaak/)
 
-Inspiration, code snippets, etc.
+## Inspiration, code snippets, etc.
 * [Cyber4s-Chess](https://github.com/talyaak/Cyber4S)
