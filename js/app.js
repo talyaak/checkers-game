@@ -7,6 +7,7 @@ const CHECKERS_BOARD_ID = 'checkers-board';
 // Global variables - non-constants
 let board, boardContainer, game, selectedPiece, winnerAnnounce = "", winner;
 let authorizedPieces = []; // <- An array that holds pieces which are allowed to move
+let currentDoubleJumper; // <- in case of existing Jumper - is held in this variable
 
 // Runs after HTML Load
 function _init() {
@@ -21,7 +22,7 @@ function createCheckersBoard() {
     checkForWinner is self-explanatory, checkForShowdown helps us decide which pieces
     are allowed to move at every turn*/
     game.checkForWinner();
-    game.checkForShowdown();
+    game.checkForShowdown(currentDoubleJumper);
 
     // Creating/recreating the board (createCheckersBoard runs anew with every 'click')
     board = document.getElementById(CHECKERS_BOARD_ID);
@@ -48,7 +49,6 @@ function createCheckersBoard() {
             const square = rowElement.insertCell();
             if ((row + col) % 2 === 0) {
                 square.className = 'light-cell';
-
             } else { square.className = 'dark-cell'; }
             square.addEventListener('click', () => onSquareClick(row, col));
         }
@@ -99,16 +99,24 @@ function onSquareClick(row, col) {
 
         // Not a first-click scenario, It's a try-to-move scenario
     } else if (selectedPiece !== undefined && (authCheck || emptyCell)) {
+
+        // true - we can move the piece to [row,col], and we did
         if (game.tryMove(selectedPiece, row, col)) {
             console.log("test 2");
-            selectedPiece = undefined; // true - we can move the piece to [row,col], and we did
+            
+            // if block: true - double/triple/etc jump has ended, reset variables
+            if (authorizedPieces.length === 1  && !game.enemyCheck(currentDoubleJumper)) {
+                authorizedPieces = game.boardData.pieces;
+                currentDoubleJumper = undefined;
+            }
+            selectedPiece = undefined;
             createCheckersBoard(); // Revamping the Checkers board since a change has been made
 
-        } else { // false - we can't move the piece, so we'll just show the selected cell's possibleMoves
+        } else { // can't move piece, show selected cell's possibleMoves
             console.log("test 3");
             game.showMoves(row, col);
         }
-    } else { console.log("not your turn/empty cell"); }
+    } else { console.log("not your turn/empty cell"); } // for testing
 }
 
 
@@ -122,22 +130,6 @@ function addImage(cell, player, glow) {
     if (glow) { image.classList.add('glow'); }
     cell.appendChild(image);
 }
-
-// function authorizedGlow() {
-//     for (piece of authorizedPieces) {
-//         if (piece.player === game.currentPlayer) {
-//             board.rows[piece.row].cells[piece.col].classList.add('glow');
-//         }
-//     }
-// }
-// function removeGlow() {
-//     for (let i = 0; i < BOARD_SIZE; i++) {
-//         for (let j = 0; j < BOARD_SIZE; j++) {
-//             board.rows[i].cells[j].classList.remove('glow');
-//         }
-//     }
-// }
-
 
 // After the HTML is loaded, createCheckerboard() is called
 window.addEventListener('load', _init);

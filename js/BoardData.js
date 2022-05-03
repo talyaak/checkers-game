@@ -27,14 +27,16 @@ class BoardData {
         // Test kit - double jump
         
         
-        // this.pieces.push(new Piece(6, 3, WHITE_PLAYER));
-        // this.pieces.push(new Piece(4, 3, WHITE_PLAYER));
-        // this.pieces.push(new Piece(2, 1, WHITE_PLAYER));
-        // this.pieces.push(new Piece(4, 5, WHITE_PLAYER));
-        // this.pieces.push(new Piece(2, 3, WHITE_PLAYER));
+        // // this.pieces.push(new Piece(2, 3, WHITE_PLAYER));
+        // // this.pieces.push(new Piece(4, 3, WHITE_PLAYER));
+        // // this.pieces.push(new Piece(2, 1, WHITE_PLAYER));
+        // // this.pieces.push(new Piece(4, 5, WHITE_PLAYER));
+        // // this.pieces.push(new Piece(2, 3, WHITE_PLAYER));
+        // // this.pieces.push(new Piece(6, 5, WHITE_PLAYER));
+        // this.pieces.push(new Piece(4, 1, WHITE_PLAYER));
 
         // this.pieces.push(new Piece(7, 2, BLACK_PLAYER));
-        // this.pieces.push(new Piece(7, 6, BLACK_PLAYER));
+        
         // this.pieces.push(new Piece(6, 1, BLACK_PLAYER));
         // // this.pieces.push(new Piece(1, 0, BLACK_PLAYER));
         // this.pieces.push(new Piece(1, 2, BLACK_PLAYER));
@@ -79,6 +81,8 @@ class BoardData {
     isPlayer(row, col, player) {
         return !this.isEmpty(row, col) && this.getPiece(row, col).player === player;
     }
+
+    // Removes a piece from boardData
     removePiece(row, col) {
         for (let i = 0; i < this.pieces.length; i++) {
             const piece = this.pieces[i];

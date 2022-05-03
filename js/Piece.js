@@ -4,6 +4,7 @@ class Piece {
         this.row = row;
         this.col = col;
         this.player = player;
+        this.doubleManeuvering = false; // <- if a piece is currently mid-jump-sequence
     }
 
     // Get the opponent's player type
@@ -11,10 +12,14 @@ class Piece {
         if (this.player === WHITE_PLAYER) { return BLACK_PLAYER; }
         else { return WHITE_PLAYER; }
     }
-    getPossibleMoves(boardData) {
-        let absoluteMoves = [], filteredMoves = [], relativeMoves, enemyMoves = [], filteredEnemyMoves = [];
+
+    // Get moves of this piece inside given BoardData
+    getPossibleMoves(boardData, isDoubleManeuvering) { // 2nd param is boolean, optional for jumping pieces
+        let absoluteMoves = [], relativeMoves, enemyMoves = [];
         //possible relative moves - standalone
-        if (this.player === WHITE_PLAYER) {
+        if (isDoubleManeuvering) { // Jumping piece - ability to move in all directions
+            relativeMoves = [[1, -1], [1, 1], [-1, -1], [-1, 1]]; 
+        } else if (this.player === WHITE_PLAYER) {
             relativeMoves = [[1, -1], [1, 1]];
         } else {
             relativeMoves = [[-1, -1], [-1, 1]];

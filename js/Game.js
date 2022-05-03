@@ -1,9 +1,11 @@
+/* Game is a class that handles game logic, using local BoardData and Pieces
+Game also applies changes to global variables */
 class Game {
     constructor() {
         this.boardData = new BoardData();
         this.currentPlayer = BLACK_PLAYER; // Black always starts first in Checkers
         this.whiteTeamScore = 0;
-        this.blackTeamScore = 0;
+        this.blackTeamScore = 12;
     }
     showMoves(row, col) {
         // Clear all previous possible moves, selected and enemy
@@ -19,7 +21,7 @@ class Game {
         const piece = this.boardData.getPiece(row, col);
         // Acquiring possible moves and giving them a color
         if (piece !== undefined) {
-            let possibleMoves = piece.getPossibleMoves(this.boardData);
+            let possibleMoves = piece.getPossibleMoves(this.boardData, piece.doubleManeuvering);
             for (let possibleMove of possibleMoves) {
                 const cell = board.rows[possibleMove[0]].cells[possibleMove[1]];
                 // Giving cells in our path a color
@@ -31,31 +33,37 @@ class Game {
         board.rows[row].cells[col].classList.add('selected');
         selectedPiece = piece;
     }
+
+    // Tries to commit movement, acts upon given rules
     tryMove(selectedPiece, row, col) {
-        let anotherEnemy;
+
         /* 'if' block that, given there is an enemy in possibleMoves
         makes it so that eating enemy is the only option*/
         if (this.enemyCheck(selectedPiece)) {
+
             // true: moved diagonally only 1 while there was an enemy
             if (Math.abs(row - selectedPiece.row) === 1
                 && Math.abs(col - selectedPiece.col) === 1) {
                 console.log("test\ntried to flee from enemy!")
                 return false;
+
             }
             else { // Moved more than 1, and there is another enemy
                 console.log("check");
-                anotherEnemy = true;
+                selectedPiece.doubleManeuvering = true;
+                currentDoubleJumper = selectedPiece;
             }
         }
         // next blocks - no enemies in possibleMoves
-        const possibleMoves = this.getPossibleMoves(selectedPiece);
+        const possibleMoves = this.getPossibleMoves(selectedPiece, selectedPiece.doubleManeuvering);
         for (const possibleMove of possibleMoves) { // possibleMove example: [1,1], [-1,1]
+
             // 'if' block that checks if there is a legal move (within possibleMoves array)
             if (possibleMove[0] === row && possibleMove[1] === col) {
                 this.eatPotentialEnemy(selectedPiece, row, col, possibleMove);
                 selectedPiece.row = row;
                 selectedPiece.col = col;
-                if (anotherEnemy) {
+                if (selectedPiece.doubleManeuvering) {
                     if (!this.enemyCheck(selectedPiece)) {
                         this.currentPlayer = selectedPiece.getOpponent();
                     }
@@ -69,7 +77,8 @@ class Game {
     }
     // Check enemies inside selectedPiece's possibleMoves
     enemyCheck(selectedPiece) {
-        let possibleMoves = selectedPiece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
+        if (selectedPiece === undefined) { return false; }
+        let possibleMoves = selectedPiece.getPossibleMoves(this.boardData, selectedPiece.doubleManeuvering); // -> [[row,col],[row,col]]
         // if block below - true means there is a PossibleMove where an enemy can be eaten
         for (let possibleMove of possibleMoves) {
             /* if block: check if diagonal space between the piece and the selected
@@ -78,6 +87,9 @@ class Game {
                 && Math.abs(possibleMove[1] - selectedPiece.col) > 1) {
                 return true;
             }
+        }
+        if (selectedPiece.doubleManeuvering) {
+            selectedPiece.doubleManeuvering = false;
         }
         return false;
     }
@@ -100,9 +112,9 @@ class Game {
         }
     }
 
-    getPossibleMoves(piece) {
+    getPossibleMoves(piece, isDoubleManeuvering) {
         if (this.currentPlayer !== piece.player) { return [] } // No moves, wait for your turn
-        return piece.getPossibleMoves(this.boardData);
+        return piece.getPossibleMoves(this.boardData, isDoubleManeuvering);
     }
 
     // Check's if the game's rules for announcing a winner have been met
@@ -126,8 +138,9 @@ class Game {
         }
     }
     /* A function that checks if current player has any "showdowns" (force-eat-enemy)
-    In this case we allow movement only to pieces that are in showdown, if not -> continuing as usual */
-    checkForShowdown() {
+    In this case we allow movement only to pieces that are in showdown, if not -> continuing as usual
+    currentDoubleJumper - optional parameter */
+    checkForShowdown(currentDoubleJumper) {
         let showdownPieces = [], haveMoves = [];
         for (let piece of this.boardData.pieces) {
             if (piece.player === this.currentPlayer) {
@@ -150,10 +163,16 @@ class Game {
         if (showdownPieces.length === 0) {
             authorizedPieces = haveMoves;
         }
+        /* true: there is a double jumper -> he is given priority
+         and exclusively 'authorized' to move */
+        if (currentDoubleJumper !== undefined) {
+            authorizedPieces = [];
+            authorizedPieces.push(currentDoubleJumper);
+        }
     }
     /* Checks for 'player' if any of his pieces has possibleMoves
-    True - player is disabled (enemy wins)
-    False - player is OK, game continues */
+    True - player is disabled -> enemy wins
+    False - player is OK -> game continues */
     checkMovementDisability(player) {
         let playerDisabled = true;
         for (let piece of this.boardData.pieces) {
@@ -166,4 +185,14 @@ class Game {
         return playerDisabled;
     }
 
+    // Returns number of pieces for player type
+    numOfPlayers(player) {
+        let numOfPlayers = 0;
+        for (let piece of this.boardData.pieces) {
+            if (piece.player === player){ 
+                numOfPlayers++;
+            }
+        }
+        return numOfPlayers;
+    }
 }
