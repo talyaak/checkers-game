@@ -5,7 +5,7 @@ class Game {
         this.boardData = new BoardData();
         this.currentPlayer = BLACK_PLAYER; // Black always starts first in Checkers
         this.whiteTeamScore = 0;
-        this.blackTeamScore = 12;
+        this.blackTeamScore = 0;
     }
     showMoves(row, col) {
         // Clear all previous possible moves, selected and enemy
