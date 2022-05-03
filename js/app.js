@@ -8,11 +8,25 @@ const CHECKERS_BOARD_ID = 'checkers-board';
 let board, boardContainer, game, selectedPiece, winnerAnnounce = "", winner;
 let authorizedPieces = []; // <- An array that holds pieces which are allowed to move
 let currentDoubleJumper; // <- in case of existing Jumper - is held in this variable
+let button; // undefined restart button for end-of-game
+
+function _init() {
+    boardContainer = document.getElementById('checkerboard-container');
+    startButton = document.createElement('button');
+    startButton.setAttribute('onClick', 'renderGame()');
+    startButton.classList.add("start-button");
+    startButton.innerText = "Let's play Checkers";
+    boardContainer.appendChild(startButton);
+}
 
 // Runs after HTML Load
-function _init() {
+function renderGame() {
     game = new Game();
+    endContainer = document.createElement('div');
+    endContainer.classList.add('end-container');
+    document.body.appendChild(endContainer);
     createCheckersBoard();
+    removeChild(startButton);
 }
 
 // Creates the Checkers board, runs after _init(), runs after every time BoardData is updated
@@ -37,7 +51,6 @@ function createCheckersBoard() {
     board.id = CHECKERS_BOARD_ID;
 
     // boardContainer - father element of the game-board in the HTML
-    boardContainer = document.getElementById('checkerboard-container');
     boardContainer.innerText = "Currently Playing: " + game.currentPlayer + " team\nScore:\nBlack: "
         + game.blackTeamScore + "\nWhite: " + game.whiteTeamScore + "\n";
     boardContainer.appendChild(board);
@@ -72,6 +85,13 @@ function createCheckersBoard() {
         winnerMsg.classList.add('winner-msg');
         for (let element of document.body.getElementsByTagName("img")) {
             element.classList.remove("piece"); // remove css cursor pointer
+            // Refresh button - new game
+        }
+        if (button === undefined) { // Restart button
+            button = document.createElement('button');
+            button.setAttribute('onClick', 'location.reload()');
+            button.innerHTML = "Restart";
+            endContainer.appendChild(button);
         }
     }
 }
@@ -104,13 +124,13 @@ function onSquareClick(row, col) {
         // true - we can move the piece to [row,col], and we did
         if (game.tryMove(selectedPiece, row, col)) {
             console.log("test 2");
-            
+
             // if block: true - double/triple/etc jump has ended, reset variables
             if (authorizedPieces.length === 1 && !game.enemyCheck(currentDoubleJumper)) {
                 authorizedPieces = game.boardData.pieces;
                 currentDoubleJumper = undefined;
             }
-            
+
             selectedPiece = undefined;
             createCheckersBoard(); // Revamping the Checkers board since a change has been made
 
@@ -131,7 +151,7 @@ function addImage(cell, piece, glow) {
     if (piece.queenStatus) {
         image.src = "images/" + piece.player + "/king.png"
     } else { image.src = "images/" + piece.player + "/pawn.png" }
-    
+
     // glow - boolean expression: True - currentPlayer's pieces (they will glow in-game for)
     if (glow) { image.classList.add('glow'); }
     cell.appendChild(image);
