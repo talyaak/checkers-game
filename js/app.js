@@ -54,12 +54,13 @@ function createCheckersBoard() {
         }
     }
     // Adding images to every square that holds a checkers piece
+    // When a piece is authorized to move, adds "glow" to piece
     for (let piece of game.boardData.pieces) {
         const square = board.rows[piece.row].cells[piece.col];
         if (authorizedPieces.includes(piece) && game.currentPlayer === piece.player) {
-            addImage(square, piece.player, true);
+            addImage(square, piece, true);
         }
-        else { addImage(square, piece.player, false); }
+        else { addImage(square, piece, false); }
 
     }
 
@@ -105,10 +106,11 @@ function onSquareClick(row, col) {
             console.log("test 2");
             
             // if block: true - double/triple/etc jump has ended, reset variables
-            if (authorizedPieces.length === 1  && !game.enemyCheck(currentDoubleJumper)) {
+            if (authorizedPieces.length === 1 && !game.enemyCheck(currentDoubleJumper)) {
                 authorizedPieces = game.boardData.pieces;
                 currentDoubleJumper = undefined;
             }
+            
             selectedPiece = undefined;
             createCheckersBoard(); // Revamping the Checkers board since a change has been made
 
@@ -121,11 +123,15 @@ function onSquareClick(row, col) {
 
 
 // Adds an image according to parameters
-function addImage(cell, player, glow) {
+function addImage(cell, piece, glow) {
     const image = document.createElement('img');
     image.classList.add("piece"); // Css class, cursor pointer
-    image.src = "images/" + player + "/pawn.png"
 
+    // Given Queen status, appointed relevant img 
+    if (piece.queenStatus) {
+        image.src = "images/" + piece.player + "/king.png"
+    } else { image.src = "images/" + piece.player + "/pawn.png" }
+    
     // glow - boolean expression: True - currentPlayer's pieces (they will glow in-game for)
     if (glow) { image.classList.add('glow'); }
     cell.appendChild(image);

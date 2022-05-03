@@ -37,7 +37,7 @@ class Game {
     // Tries to commit movement, acts upon given rules
     tryMove(selectedPiece, row, col) {
 
-        /* 'if' block that, given there is an enemy in possibleMoves
+        /* 'if' block: given there is an enemy in possibleMoves
         makes it so that eating enemy is the only option*/
         if (this.enemyCheck(selectedPiece)) {
 
@@ -45,7 +45,7 @@ class Game {
             if (Math.abs(row - selectedPiece.row) === 1
                 && Math.abs(col - selectedPiece.col) === 1) {
                 console.log("test\ntried to flee from enemy!")
-                return false;
+                return false; // <- unsuccessful movement 
 
             }
             else { // Moved more than 1, and there is another enemy
@@ -63,6 +63,10 @@ class Game {
                 this.eatPotentialEnemy(selectedPiece, row, col, possibleMove);
                 selectedPiece.row = row;
                 selectedPiece.col = col;
+                if (!selectedPiece.queenStatus) {
+                    selectedPiece.queenStatus = this.checkQueensStatus(selectedPiece);
+                } else { selectedPiece.queenStatus = true; }
+
                 if (selectedPiece.doubleManeuvering) {
                     if (!this.enemyCheck(selectedPiece)) {
                         this.currentPlayer = selectedPiece.getOpponent();
@@ -77,8 +81,24 @@ class Game {
     }
     // Check enemies inside selectedPiece's possibleMoves
     enemyCheck(selectedPiece) {
+        let i;
         if (selectedPiece === undefined) { return false; }
         let possibleMoves = selectedPiece.getPossibleMoves(this.boardData, selectedPiece.doubleManeuvering); // -> [[row,col],[row,col]]
+        if (selectedPiece.queenStatus) {
+            let queenRow = selectedPiece.row, queenCol = selectedPiece.col, queenEnemies = [];
+            let directions = [[i, i], [-i, -i], [-i, i], [i, -i]];
+            for (let direction of directions) {
+                for (let i = 1; i < BOARD_SIZE + 1; i++) {
+                    let row = queenRow + direction[0];
+                    let col = queenCol + direction[1];
+                    if (this.boardData.isPlayer(row, col, selectedPiece.getOpponent())) {
+                        queenEnemies.push(this.boardData.getPiece(row, col));
+                    }
+                }
+            }
+            if (queenEnemies.length === 0) { return false; }
+            else { return true; }
+        }
         // if block below - true means there is a PossibleMove where an enemy can be eaten
         for (let possibleMove of possibleMoves) {
             /* if block: check if diagonal space between the piece and the selected
@@ -189,10 +209,20 @@ class Game {
     numOfPlayers(player) {
         let numOfPlayers = 0;
         for (let piece of this.boardData.pieces) {
-            if (piece.player === player){ 
+            if (piece.player === player) {
                 numOfPlayers++;
             }
         }
         return numOfPlayers;
+    }
+    checkQueensStatus(selectedPiece) {
+        let row;
+        // Checking row relevant to Queen status
+        if (this.currentPlayer === WHITE_PLAYER) { row = 7; }
+        else { row = 0; }
+
+        // Checking if selectedPiece reached row, ergo QueenStatus = true
+        if (selectedPiece.row === row) { return true; }
+        else { return false; }
     }
 }

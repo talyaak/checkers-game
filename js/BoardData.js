@@ -41,19 +41,22 @@ class BoardData {
         // // this.pieces.push(new Piece(1, 0, BLACK_PLAYER));
         // this.pieces.push(new Piece(1, 2, BLACK_PLAYER));
         
+        // // Test Kit - Queen
+        // this.pieces.push(new Piece(1, 0, BLACK_PLAYER));
+        // this.pieces.push(new Piece(4, 5, WHITE_PLAYER));        
+        // this.pieces.push(new Piece(4, 1, WHITE_PLAYER));
+        // this.pieces.push(new Piece(7, 2, BLACK_PLAYER));
+
         
         // Test kit
-        // this.pieces.push(new Piece(5, 0, WHITE_PLAYER));
+        // this.pieces.push(new Piece(1, 4, BLACK_PLAYER));
         
-        // this.pieces.push(new Piece(0, 1, WHITE_PLAYER));
+        
+
         // this.pieces.push(new Piece(4, 7, WHITE_PLAYER));
         
         // this.pieces.push(new Piece(2, 3, WHITE_PLAYER));
         
-        // this.pieces.push(new Piece(2, 7, WHITE_PLAYER));
-        
-        // this.pieces.push(new Piece(7, 0, BLACK_PLAYER));
-        // this.pieces.push(new Piece(7, 2, BLACK_PLAYER));
         // this.pieces.push(new Piece(6, 5, BLACK_PLAYER));
         // this.pieces.push(new Piece(5, 6, BLACK_PLAYER));
         
