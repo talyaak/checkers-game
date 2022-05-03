@@ -10,6 +10,14 @@ In this repository, you will find Tal's Checkers game project. Feel free to brow
 
 ### Code walkthrough video
 * https://drive.google.com/file/d/1qNNMCWKV4Dsphomz88KhpV6TAouEVZvQ/view
+* 00:00 - Game showcase
+* 03:10 - Github README.md, HTML
+* 03:40 - Quick view on classes
+* 04:50 - App.js walkthrough
+* 09:10 - Piece.js
+* 10:45 - BoardData.js
+* 11:35 - Game.js + Style.css
+* 18:35 - Summary and a personal thank you
 
 ### Dependencies
 
