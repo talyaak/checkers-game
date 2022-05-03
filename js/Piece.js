@@ -19,12 +19,7 @@ class Piece {
         let absoluteMoves = [], relativeMoves, relativeMove, enemyMoves = [];
         //possible relative moves - standalone
 
-        // if (this.queenStatus) {
-        //     let relativeMoves = []
-        //     for (let i = 0; i<BOARD_SIZE; i++) {
-        //     relativeMoves.concat([[i, -i], [i, i], [-i, -i], [-i, i]]);
-        //     }  
-        // } else 
+    
 
         if (isDoubleManeuvering) { // Jumping piece - ability to move in all directions
             relativeMoves = [[1, -1], [1, 1], [-1, -1], [-1, 1]];
@@ -37,9 +32,9 @@ class Piece {
             relativeMoves = [];
             for (let i = 0; i < BOARD_SIZE; i++) {
                 relativeMoves = relativeMoves.concat(this.getMovesInDirection(1, 1, boardData));
-                // relativeMoves = relativeMoves.concat(this.getMovesInDirection(-1, -1, boardData));
-                // relativeMoves = relativeMoves.concat(this.getMovesInDirection(1, -1, boardData));
-                // relativeMoves = relativeMoves.concat(this.getMovesInDirection(-1, 1, boardData));
+                relativeMoves = relativeMoves.concat(this.getMovesInDirection(-1, -1, boardData));
+                relativeMoves = relativeMoves.concat(this.getMovesInDirection(1, -1, boardData));
+                relativeMoves = relativeMoves.concat(this.getMovesInDirection(-1, 1, boardData));
             }
         }
         // a relative moves looks like this: [row, col]
@@ -49,9 +44,11 @@ class Piece {
             if (boardData.isEmpty(row, col)) { // Empty scenario
                 absoluteMoves.push([row, col]);
             } else if (boardData.isPlayer(row, col, this.getOpponent())) { // Enemy scenario
+                
                 // anotherEnemy - boolean: if(there's another enemy behind current enemy)
                 const anotherEnemy = boardData.isPlayer(row + relativeMove[0], col + relativeMove[1], this.getOpponent());
-                // anotherEnemy - boolean: if(there's a friendly behind current enemy)
+                
+                // anotherFriendly - boolean: if(there's a friendly behind current enemy)
                 const anotherFriendly = boardData.isPlayer(row + relativeMove[0], col + relativeMove[1], this.player);
                 if (!(anotherEnemy || anotherFriendly)) { // 'if' block that checks if we can eat the enemy
                     enemyMoves.push([row + relativeMove[0], col + relativeMove[1]]); // Going above encountered enemy

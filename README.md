@@ -8,8 +8,8 @@ In this repository, you will find Tal's Checkers game project. Feel free to brow
 
 ## Getting Started
 
-### Code explanation video
-* (insert link here)
+### Code walkthrough video
+* https://drive.google.com/file/d/1qNNMCWKV4Dsphomz88KhpV6TAouEVZvQ/view
 
 ### Dependencies
 

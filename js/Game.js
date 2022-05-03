@@ -4,7 +4,7 @@ class Game {
     constructor() {
         this.boardData = new BoardData();
         this.currentPlayer = BLACK_PLAYER; // Black always starts first in Checkers
-        this.whiteTeamScore = 11;
+        this.whiteTeamScore = 0;
         this.blackTeamScore = 0;
     }
     showMoves(row, col) {
@@ -215,6 +215,7 @@ class Game {
         }
         return numOfPlayers;
     }
+    
     checkQueensStatus(selectedPiece) {
         let row;
         // Checking row relevant to Queen status
