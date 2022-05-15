@@ -1,6 +1,6 @@
 # Cyber4s Checkers Project
 
-A (currently) private repo, consists of Tal Yakoubov's final project for Cyber4S Bootcamp Pre-Course
+A project repo, consists of Tal Yakoubov's final project for Cyber4S Bootcamp Pre-Course
 
 ## Description
 
