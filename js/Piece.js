@@ -1,25 +1,37 @@
-/* 'Piece' - stores chess piece info, functions include getOpponent, getPossibleMoves, filterMoves*/
+/**
+ * * Pieces class - stores pieces info - row, column, player typ, etc.
+ * * functions include: getOpponent, getPossibleMoves, filterMoves
+ */
+
 class Piece {
     constructor(row, col, player) {
         this.row = row;
         this.col = col;
         this.player = player;
-        this.doubleManeuvering = false; // <- if a piece is currently mid-jump-sequence
+        this.doubleManeuvering = false; // * <- if a piece is currently mid-jump-sequence
         this.queenStatus = false;
     }
 
-    // Get the opponent's player type
+    /**
+     * Get the opponent's player type
+     * @returns Player type - WHITE_PLAYER/BLACK_PLAYER
+     */
     getOpponent() {
         if (this.player === WHITE_PLAYER) { return BLACK_PLAYER; }
         else { return WHITE_PLAYER; }
     }
 
-    // Get moves of this piece inside given BoardData
+    // TODO: define a separate queenMoves() function for code readability and functionality
+
+    /**
+     * * Get moves of this piece inside given BoardData
+     * @param {boardData} boardData A boardData object
+     * @param {boolean} isDoubleManeuvering Optional parameter, True if there is a "Jumper"
+     * @returns List of possible moves for this piece
+     */
     getPossibleMoves(boardData, isDoubleManeuvering) { // 2nd param is boolean, optional for jumping pieces
         let absoluteMoves = [], relativeMoves, relativeMove, enemyMoves = [];
-        //possible relative moves - standalone
-
-    
+        // * possible relative moves - standalone    
 
         if (isDoubleManeuvering) { // Jumping piece - ability to move in all directions
             relativeMoves = [[1, -1], [1, 1], [-1, -1], [-1, 1]];
@@ -37,7 +49,7 @@ class Piece {
                 relativeMoves = relativeMoves.concat(this.getMovesInDirection(-1, 1, boardData));
             }
         }
-        // a relative moves looks like this: [row, col]
+        // * a relative moves looks like this: [row, col]
         for (relativeMove of relativeMoves) {
             let row = this.row + relativeMove[0]; //
             let col = this.col + relativeMove[1];
@@ -58,17 +70,21 @@ class Piece {
             }
         }
 
-        // filtering out out-of-bound moves
+        // * filtering out out-of-bound moves
         enemyMoves = this.filterMoves(enemyMoves);
         absoluteMoves = this.filterMoves(absoluteMoves);
 
-        // If there are any enemy moves - we ignore absolute moves (abiding game rules).
+        // * If there are any enemy moves - we ignore absolute moves (abiding game rules).
         if (enemyMoves.length !== 0) { return enemyMoves; }
 
         return absoluteMoves;
     }
 
-    // Inner function that helps filtering out out-of-bounds moves
+    /**
+     * * Inner function that helps filtering out out-of-bounds moves
+     * @param {Array} moves Given moves array
+     * @returns Array of filtered moves
+     */
     filterMoves(moves) {
         let filteredMoves = [];
         for (let move of moves) {
@@ -81,6 +97,7 @@ class Piece {
         return filteredMoves;
     }
 
+    // TODO: configure this function for Queen moves
     getMovesInDirection(rowDir, colDir, boardData) {
         let result = [], opponent = this.getOpponent(), player = this.player;
 

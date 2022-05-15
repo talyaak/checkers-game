@@ -1,14 +1,21 @@
-// BoardData - our local JS database
+// 
+/**
+ * * BoardData - our local JS database
+ * * Stores information regarding the pieces in the board
+ * * Includes functions: getInitialPieces, getPiece, isEmpty, isPlayer, removePiece
+ */
 
 class BoardData {
-    /* The constructor creates the board pieces
-    We can use board data to access pieces & info */
+    // * The constructor creates the board pieces
+    // * We can use board data to access pieces & info 
     constructor() {
         this.getInitialPieces();
 
     }
 
-    // list of 32 pieces
+    /**
+     * * Creates a list of 32 board pieces
+     */
     getInitialPieces() {
         this.pieces = [];
         // pieces in uneven rows:
@@ -65,7 +72,13 @@ class BoardData {
         // this.pieces.push(new Piece(3, 6, BLACK_PLAYER));
         
     }
-    // Returns piece in row, col, or undefined if not exists.
+    
+    /**
+     * * This function return relevant piece in row, col, or undefined if not
+     * @param {number} row Row specification 
+     * @param {number} col Column specification
+     * @returns Piece object, or undefined if not applicable
+     */
     getPiece(row, col) {
         for (let piece of this.pieces) {
             if (piece.row === row && piece.col === col) {
@@ -74,23 +87,38 @@ class BoardData {
         }
     }
 
-    /* Checks if given parameters appoint to undefined
-    cell (no piece in cell) */
+    
+    /**
+     * * Checks if given parameters appoint to undefined cell (no piece in cell)
+     * @param {number} row Row specification
+     * @param {number} col Column specification
+     * @returns True - if the cell is empty, False - If it's occupied
+     */
     isEmpty(row, col) {
         return this.getPiece(row, col) === undefined;
     }
 
-    /* Checks if there is a player(given parameter) in [row,col](also given parameter) */
+    /**
+     * * Checks if there is a player(given parameter) in [row,col](also given parameter)
+     * @param {number} row Row specification 
+     * @param {number} col Column specification
+     * @param {string} player Type of player 
+     * @returns 
+     */    
     isPlayer(row, col, player) {
         return !this.isEmpty(row, col) && this.getPiece(row, col).player === player;
     }
 
-    // Removes a piece from boardData
+    /**
+     * * Removes a piece from boardData
+     * @param {number} row Row specification 
+     * @param {number} col Column specification 
+     */
     removePiece(row, col) {
         for (let i = 0; i < this.pieces.length; i++) {
             const piece = this.pieces[i];
             if (piece.row === row && piece.col === col) {
-                // Remove piece at index i
+                // * Remove piece at index i
                 this.pieces.splice(i, 1);
             }
         }

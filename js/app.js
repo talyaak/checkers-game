@@ -1,15 +1,26 @@
-// Global variables - constants
+/**
+ * * App.js - Runs & renders the game with:
+ * * Pieces.js, BoardData.js, Game.js
+ * * Various functions that configure the game UI
+ */
+
+// * Global variables - constants
 const BOARD_SIZE = 8;
 const WHITE_PLAYER = 'white';
 const BLACK_PLAYER = 'black';
 const CHECKERS_BOARD_ID = 'checkers-board';
 
-// Global variables - non-constants
+// * Global variables - non-constants
 let board, boardContainer, game, selectedPiece, winnerAnnounce = "", winner;
-let authorizedPieces = []; // <- An array that holds pieces which are allowed to move
-let currentDoubleJumper; // <- in case of existing Jumper - is held in this variable
-let button; // undefined restart button for end-of-game
+let authorizedPieces = []; //  * <- An array that holds pieces which are allowed to move
+let currentDoubleJumper; // * <- in case of existing Jumper - is held in this variable
+let button; // * undefined restart button for end-of-game
 
+/**
+ * * _init is the first function that will be called after the HTML is loaded
+ * * It creates HTML elements, and a start button
+ * * Clicking on the start button - creates a new game
+ */
 function _init() {
     boardContainer = document.getElementById('checkerboard-container');
     startButton = document.createElement('button');
@@ -19,7 +30,9 @@ function _init() {
     boardContainer.appendChild(startButton);
 }
 
-// Runs after HTML Load
+/**
+ * * Runs after player clicks start button
+ */
 function renderGame() {
     game = new Game();
     endContainer = document.createElement('div');
@@ -29,33 +42,34 @@ function renderGame() {
     removeChild(startButton);
 }
 
-// Creates the Checkers board, runs after _init(), runs after every time BoardData is updated
+/**
+ * * Creates the Checkers board, runs after renderGame()
+ * * Runs after every time BoardData is updated
+ */
 function createCheckersBoard() {
 
-    /* Two functions in Game() that run in the background, after every piece movement
-    checkForWinner is self-explanatory, checkForShowdown helps us decide which pieces
-    are allowed to move at every turn*/
+    // * Two functions in Game() that run in the background, after every piece movement
+    // * checkForWinner is self-explanatory, checkForShowdown helps us decide which pieces
+    // * are allowed to move at every turn
     game.checkForWinner();
     game.checkForShowdown(currentDoubleJumper);
 
-    // Creating/recreating the board (createCheckersBoard runs anew with every 'click')
+    // * Creating/recreating the board (createCheckersBoard runs anew with every 'click')
     board = document.getElementById(CHECKERS_BOARD_ID);
     if (board !== null) {
         board.remove();
     }
 
-
-
-    /* Creating the table that will eventually become our game-board */
+    // * Creating the table that will eventually become our game-board 
     board = document.createElement('table');
     board.id = CHECKERS_BOARD_ID;
 
-    // boardContainer - father element of the game-board in the HTML
+    // * boardContainer - father element of the game-board in the HTML
     boardContainer.innerText = "Currently Playing: " + game.currentPlayer + " team\nScore:\nBlack: "
         + game.blackTeamScore + "\nWhite: " + game.whiteTeamScore + "\n";
     boardContainer.appendChild(board);
 
-    /* Creating a table - size 8X8 */
+    // * Creating a table - size 8X8 */
     for (let row = 0; row < BOARD_SIZE; row++) {
         const rowElement = board.insertRow();
         for (let col = 0; col < BOARD_SIZE; col++) {
@@ -63,6 +77,7 @@ function createCheckersBoard() {
             if ((row + col) % 2 === 0) {
                 square.className = 'light-cell';
             } else { square.className = 'dark-cell'; }
+            // TODO: adding eventListener only to relevant pieces of this turn
             square.addEventListener('click', () => onSquareClick(row, col));
         }
     }
@@ -77,7 +92,7 @@ function createCheckersBoard() {
 
     }
 
-    // A Popup message that will appear when a winner is declared
+    // * A Popup message that will appear when a winner is declared
     let winnerMsg = document.createElement('div')
     if (winnerAnnounce !== "") {
         winnerMsg.textContent = winnerAnnounce;
@@ -85,7 +100,6 @@ function createCheckersBoard() {
         winnerMsg.classList.add('winner-msg');
         for (let element of document.body.getElementsByTagName("img")) {
             element.classList.remove("piece"); // remove css cursor pointer
-            // Refresh button - new game
         }
         if (button === undefined) { // Restart button
             button = document.createElement('button');
@@ -96,11 +110,15 @@ function createCheckersBoard() {
     }
 }
 
-// Runs after each time a table square is clicked
+/**
+ * * Runs after each time a table square is clicked
+ * @param {number} row Row specification
+ * @param {number} col Column specification
+ */
 function onSquareClick(row, col) {
-
-    /* Creating boolean statements that will help us determine how the
-    function will work depending on the board and pieces */
+    
+    // * Creating boolean statements that will help us determine how the
+    // * function will work depending on the board and pieces 
     let authCheck;
     if (game.boardData.isPlayer(row, col, game.currentPlayer)) {
         const tempPiece = game.boardData.getPiece(row, col);
@@ -109,13 +127,12 @@ function onSquareClick(row, col) {
         authCheck = authorizedPieces.includes(tempPiece);
     }
 
-    // emptyCell - boolean expression (true - square[row,col] is empty)
+    // * emptyCell - boolean expression (true - square[row,col] is empty)
     const emptyCell = game.boardData.isEmpty(row, col);
 
-    // first case click-scenario (first click/non-move)
-    // if statement to prevent onSquareClick for unauthorized player
+    // * first case click-scenario (first click/non-move)
+    // * if statement to prevent onSquareClick for unauthorized player
     if (selectedPiece === undefined && (authCheck || emptyCell)) {
-        console.log("test 1");
         game.showMoves(row, col);
 
         // Not a first-click scenario, It's a try-to-move scenario
@@ -123,7 +140,6 @@ function onSquareClick(row, col) {
 
         // true - we can move the piece to [row,col], and we did
         if (game.tryMove(selectedPiece, row, col)) {
-            console.log("test 2");
 
             // if block: true - double/triple/etc jump has ended, reset variables
             if (authorizedPieces.length === 1 && !game.enemyCheck(currentDoubleJumper)) {
@@ -135,27 +151,31 @@ function onSquareClick(row, col) {
             createCheckersBoard(); // Revamping the Checkers board since a change has been made
 
         } else { // can't move piece, show selected cell's possibleMoves
-            console.log("test 3");
             game.showMoves(row, col);
         }
     } else { console.log("not your turn/empty cell"); } // for testing
 }
 
 
-// Adds an image according to parameters
+/**
+ * * Adds an image according to given parameters 
+ * @param {number} cell 
+ * @param {number} piece 
+ * @param {boolean} glow Boolean that indicates whether the piece should "glow"
+ */
 function addImage(cell, piece, glow) {
     const image = document.createElement('img');
     image.classList.add("piece"); // Css class, cursor pointer
 
-    // Given Queen status, appointed relevant img 
+    // * Given Queen status, appointed relevant img 
     if (piece.queenStatus) {
         image.src = "images/" + piece.player + "/king.png"
     } else { image.src = "images/" + piece.player + "/pawn.png" }
 
-    // glow - boolean expression: True - currentPlayer's pieces (they will glow in-game for)
+    // * glow - boolean expression: True - currentPlayer's pieces (they will glow in-game for)
     if (glow) { image.classList.add('glow'); }
     cell.appendChild(image);
 }
 
-// After the HTML is loaded, createCheckerboard() is called
+// * After the HTML is loaded, createCheckerboard() is called
 window.addEventListener('load', _init);

@@ -1,64 +1,80 @@
-/* Game is a class that handles game logic, using local BoardData and Pieces
-Game also applies changes to global variables */
+/*  */
+/**
+ * * Game is a class that handles game logic, using local BoardData and Pieces
+ * * Game also applies changes to global variables 
+ * * Includes functions:
+ */
+
 class Game {
     constructor() {
         this.boardData = new BoardData();
-        this.currentPlayer = BLACK_PLAYER; // Black always starts first in Checkers
+        this.currentPlayer = BLACK_PLAYER; // * Black player always starts first in Checkers
         this.whiteTeamScore = 0;
         this.blackTeamScore = 0;
     }
+    
+    /**
+     * * Deletes previous shown moves, gives new moves that proper coloring
+     * @param {number} row Row specification
+     * @param {number} col Column specification
+     */
     showMoves(row, col) {
-        // Clear all previous possible moves, selected and enemy
+        // * Clear all previous possible moves, selected and enemy
         for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
                 board.rows[i].cells[j].classList.remove('possible-move');
                 board.rows[i].cells[j].classList.remove('selected');
-                board.rows[i].cells[j].classList.remove('enemy');
             }
         }
-
-        // Using boardData to gain information
+        // * Using boardData to gain information
         const piece = this.boardData.getPiece(row, col);
-        // Acquiring possible moves and giving them a color
+        // * Acquiring possible moves and giving them a color
+        // TODO: create separate function
         if (piece !== undefined) {
             let possibleMoves = piece.getPossibleMoves(this.boardData, piece.doubleManeuvering);
             for (let possibleMove of possibleMoves) {
                 const cell = board.rows[possibleMove[0]].cells[possibleMove[1]];
-                // Giving cells in our path a color
+                // * Giving cells in our path a color
                 cell.classList.add('possible-move');
             }
         }
 
-        // Giving the selected piece's cell a color
+        // * Giving the selected piece's cell a color
         board.rows[row].cells[col].classList.add('selected');
         selectedPiece = piece;
     }
 
-    // Tries to commit movement, acts upon given rules
+    /**
+     * * Tries to commit movement, acts upon given rules
+     * @param {piece} selectedPiece The given piece
+     * @param {*} row Row specification
+     * @param {*} col Column specification
+     * @returns {boolean} True if successful move has been made, false otherwise
+     */
     tryMove(selectedPiece, row, col) {
 
-        /* 'if' block: given there is an enemy in possibleMoves
-        makes it so that eating enemy is the only option*/
+        // *'if' block: given there is an enemy in possibleMoves,
+        // * makes it so that eating enemy is the only option
         if (this.enemyCheck(selectedPiece)) {
 
-            // true: moved diagonally only 1 while there was an enemy
+            // * true: moved diagonally only 1 while there was an enemy
             if (Math.abs(row - selectedPiece.row) === 1
                 && Math.abs(col - selectedPiece.col) === 1) {
                 console.log("test\ntried to flee from enemy!")
                 return false; // <- unsuccessful movement 
 
             }
-            else { // Moved more than 1, and there is another enemy
+            else { // * Moved more than 1, and there is another enemy
                 console.log("check");
                 selectedPiece.doubleManeuvering = true;
                 currentDoubleJumper = selectedPiece;
             }
         }
-        // next blocks - no enemies in possibleMoves
+        // * Next blocks - no enemies in possibleMoves
         const possibleMoves = this.getPossibleMoves(selectedPiece, selectedPiece.doubleManeuvering);
         for (const possibleMove of possibleMoves) { // possibleMove example: [1,1], [-1,1]
 
-            // 'if' block that checks if there is a legal move (within possibleMoves array)
+            // * 'if' block that checks if there is a legal move (within possibleMoves array)
             if (possibleMove[0] === row && possibleMove[1] === col) {
                 this.eatPotentialEnemy(selectedPiece, row, col, possibleMove);
                 selectedPiece.row = row;
@@ -74,16 +90,21 @@ class Game {
                     createCheckersBoard();
                 }
                 else { this.currentPlayer = selectedPiece.getOpponent(); }
-                return true; // When move has been made, returns true
+                return true; // * When move has been made, returns true
             }
         }
-        return false; // No move made, returns false
+        return false; // * No move made, returns false
     }
-    // Check enemies inside selectedPiece's possibleMoves
+
+    /**
+     * * Check enemies inside selectedPiece's possibleMoves
+     * @param {piece} selectedPiece The given piece to check
+     * @returns {boolean} True if there are enemies inside selectedPiece's possibleMoves'
+     */
     enemyCheck(selectedPiece) {
         let i;
         if (selectedPiece === undefined) { return false; }
-        let possibleMoves = selectedPiece.getPossibleMoves(this.boardData, selectedPiece.doubleManeuvering); // -> [[row,col],[row,col]]
+        let possibleMoves = selectedPiece.getPossibleMoves(this.boardData, selectedPiece.doubleManeuvering); // * -> [[row,col],[row,col]]
         if (selectedPiece.queenStatus) {
             let queenRow = selectedPiece.row, queenCol = selectedPiece.col, queenEnemies = [];
             let directions = [[i, i], [-i, -i], [-i, i], [i, -i]];
@@ -99,10 +120,10 @@ class Game {
             if (queenEnemies.length === 0) { return false; }
             else { return true; }
         }
-        // if block below - true means there is a PossibleMove where an enemy can be eaten
+        // * "if" block below - true means there is a PossibleMove where an enemy can be eaten
         for (let possibleMove of possibleMoves) {
-            /* if block: check if diagonal space between the piece and the selected
-            move is bigger than 1 -> meaning that there's an enemy between them */
+            // * if block: check if diagonal space between the piece and the selected
+            // * move is bigger than 1 -> meaning that there's an enemy between them
             if (Math.abs(possibleMove[0] - selectedPiece.row) > 1
                 && Math.abs(possibleMove[1] - selectedPiece.col) > 1) {
                 return true;
@@ -114,16 +135,22 @@ class Game {
         return false;
     }
 
-    // Checking after each move, if an enemy has been eaten
+    
+    /**
+     * * Checking after each move, if an enemy has been eaten
+     * @param {piece} selectedPiece The given piece
+     * @param {number} row Row specification
+     * @param {number} col Column specification
+     */
     eatPotentialEnemy(selectedPiece, row, col) {
-        // if block - checks if player has moved more than one cube away (== ate an enemy)
+        // * if block - checks if player has moved more than one cube away (== ate an enemy)
         if (Math.abs(row - selectedPiece.row) > 1 && Math.abs(col - selectedPiece.col) > 1) {
             let relativeMove = [0, 0];
             relativeMove[0] = row - selectedPiece.row;
             relativeMove[1] = col - selectedPiece.col;
             const enemyRow = selectedPiece.row + relativeMove[0] / 2;
             const enemyCol = selectedPiece.col + relativeMove[1] / 2;
-            // Asserting that there is an enemy, removing enemy from boardData, acquiring score
+            // * Asserting that there is an enemy, removing enemy from boardData, acquiring score
             if (this.boardData.isPlayer(enemyRow, enemyCol, selectedPiece.getOpponent())) {
                 this.boardData.removePiece(enemyRow, enemyCol)
                 if (selectedPiece.player === WHITE_PLAYER) { this.whiteTeamScore++; }
@@ -132,43 +159,54 @@ class Game {
         }
     }
 
+    /**
+     * * This function returns the piece's possible moves
+     * @param {piece} piece The piece to check
+     * @param {boolean} isDoubleManeuvering Optional parameter, True if there is a "Jumper"
+     * @returns Possible moves of given piece
+     */
     getPossibleMoves(piece, isDoubleManeuvering) {
-        if (this.currentPlayer !== piece.player) { return [] } // No moves, wait for your turn
+        if (this.currentPlayer !== piece.player) { return [] } // * <- No moves: "wait for your turn"
         return piece.getPossibleMoves(this.boardData, isDoubleManeuvering);
     }
 
-    // Check's if the game's rules for announcing a winner have been met
+    /**
+     * * Check's if the game's rules for announcing a winner have been met
+     */
     checkForWinner() {
-        // Win by score (consumed all enemies)
+        // * Win by score (consumed all enemies)
         if (this.blackTeamScore === 12 || this.whiteTeamScore === 12) {
             onSquareClick = function () { } // disabling further clicks
             if (this.blackTeamScore === 12) { winner = "Black Team"; }
             else { winner = "White Team"; }
             winnerAnnounce = winner + " WON!";
 
-            // Win by disabling enemy's movement (Black wins)
+            // * Win by disabling enemy's movement (Black wins)
         } else if (this.checkMovementDisability(WHITE_PLAYER)) {
             onSquareClick = function () { }
             winnerAnnounce = "Black Team WON!";
 
-            // Win by disabling enemy's movement (White wins)
+            // * Win by disabling enemy's movement (White wins)
         } else if (this.checkMovementDisability(BLACK_PLAYER)) {
             onSquareClick = function () { }
             winnerAnnounce = "White Team WON!";
         }
     }
-    /* A function that checks if current player has any "showdowns" (force-eat-enemy)
-    In this case we allow movement only to pieces that are in showdown, if not -> continuing as usual
-    currentDoubleJumper - optional parameter */
+
+    /**
+     * * A function that checks if current player has any "showdowns" (force-eat-enemy)
+     * * In this case we allow movement only to pieces that are in showdown, if not -> continues as usual
+     * @param {piece} currentDoubleJumper Optional parameter, a player that can double jump
+     */
     checkForShowdown(currentDoubleJumper) {
         let showdownPieces = [], haveMoves = [];
         for (let piece of this.boardData.pieces) {
             if (piece.player === this.currentPlayer) {
                 let possibleMoves = piece.getPossibleMoves(this.boardData); // -> [[row,col],[row,col]]
 
-                // if block below - true means there is a PossibleMove where an enemy can be eaten
+                // * if block below - true means there is a PossibleMove where an enemy can be eaten
                 if (possibleMoves.length > 0) {
-                    haveMoves.push(piece);  // Pieces with movement ability, used after 'for' block
+                    haveMoves.push(piece);  // * Pieces with movement ability, used after 'for' block
                 }
                 for (let possibleMove of possibleMoves) {
                     if (Math.abs(possibleMove[0] - piece.row) > 1
@@ -179,20 +217,22 @@ class Game {
                 authorizedPieces = showdownPieces;
             }
         }
-        // There's no showdown, ergo authorizedMoves = currentPlayer's pieces that can move
+        // * There's no showdown, ergo authorizedMoves = currentPlayer's pieces that can move
         if (showdownPieces.length === 0) {
             authorizedPieces = haveMoves;
         }
-        /* true: there is a double jumper -> he is given priority
-         and exclusively 'authorized' to move */
+        // * true: there is a double jumper -> he is given priority and exclusively 'authorized' to move
         if (currentDoubleJumper !== undefined) {
             authorizedPieces = [];
             authorizedPieces.push(currentDoubleJumper);
         }
     }
-    /* Checks for 'player' if any of his pieces has possibleMoves
-    True - player is disabled -> enemy wins
-    False - player is OK -> game continues */
+
+    /**
+     * * Checks for 'player' if any of his pieces has possibleMoves
+     * @param {string} player The player object 
+     * @returns Boolean: True - player is disabled -> enemy wins, False - enemy is fine, game continues
+     */
     checkMovementDisability(player) {
         let playerDisabled = true;
         for (let piece of this.boardData.pieces) {
@@ -205,7 +245,11 @@ class Game {
         return playerDisabled;
     }
 
-    // Returns number of pieces for player type
+    /**
+     * 
+     * @param {string} player Type of player
+     * @returns Number of pieces that are of player type (white, black)
+     */
     numOfPlayers(player) {
         let numOfPlayers = 0;
         for (let piece of this.boardData.pieces) {
@@ -216,13 +260,18 @@ class Game {
         return numOfPlayers;
     }
     
+    /**
+     * 
+     * @param {piece} selectedPiece 
+     * @returns Boolean expression: True - the selected piece is Queen, False - vice versa
+     */
     checkQueensStatus(selectedPiece) {
         let row;
-        // Checking row relevant to Queen status
+        // * Checking row relevant to Queen status
         if (this.currentPlayer === WHITE_PLAYER) { row = 7; }
         else { row = 0; }
 
-        // Checking if selectedPiece reached row, ergo QueenStatus = true
+        // * Checking if selectedPiece reached row, ergo QueenStatus = true
         if (selectedPiece.row === row) { return true; }
         else { return false; }
     }
