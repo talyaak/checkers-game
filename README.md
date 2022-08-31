@@ -4,6 +4,8 @@ My final project for Cyber4S bootcamp pre-course
 
 ## Description
 
+[Link](https://talyaak.github.io/)
+
 In this repository, you will find my Checkers game project. 
 Feel free to browse, I very much hope that you will like my code!
 
